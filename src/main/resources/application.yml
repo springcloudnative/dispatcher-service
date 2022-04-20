@@ -4,3 +4,10 @@ server:
 spring:
   application:
     name: dispatcher-service
+  # spring.cloud.function.definition property lets you declare which function(s) you
+  # want Spring Cloud Function to manage and integrate.
+  # In this way, Spring Cloud Function use them as building blocks and produce a new
+  # function which comes from the composition of those two.
+  cloud:
+    function:
+      definition: pack|label

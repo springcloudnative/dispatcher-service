@@ -22,7 +22,7 @@ spring:
           group: ${spring.application.name}
         packlabel-out-0:
           destination: order-dispatched
-#
+  #
   kafka:
     bootstrap-servers: ${kafka_bootstrap_servers:localhost:9092}
     properties:
@@ -49,8 +49,6 @@ spring:
       properties:
         spring:
           json:
-            trusted:
-              packages: '*'
             add:
               type:
                 headers: false
@@ -60,3 +58,7 @@ spring:
       poll-timeout: 1800000
       concurrency: 1
       ack-mode: manual_immediate
+
+testcontainers:
+  reuse:
+    enable: true

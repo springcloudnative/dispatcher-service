@@ -25,22 +25,34 @@
 		<!--suppress UnresolvedMavenProperty -->
 		<registryUrl>${REGISTRY_URL}</registryUrl>
 		<jib-maven-plugin.version>3.2.1</jib-maven-plugin.version>
-		<spring-boot-maven-plugin.version>2.6.1</spring-boot-maven-plugin.version>
+		<spring-boot-maven-plugin.version>2.6.7</spring-boot-maven-plugin.version>
 		<jacoco-maven-plugin.version>0.8.4</jacoco-maven-plugin.version>
 		<spring-cloud-starter-contract-stub-runner.version>3.1.1</spring-cloud-starter-contract-stub-runner.version>
-		<sonar-maven-plugin.version>3.6.0.1398</sonar-maven-plugin.version>
+		<sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
 		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
 		<code.coverage.exclusions>
-			**/com/polarbookshop/orderservice/domain/dto/**,
-			**/com/polarbookshop/orderservice/infrastructure/entity/**,
-			**/com/polarbookshop/orderservice/OrderServiceApplication.java
+			**/com/polarbookshop/dispatcherservice/domain/dto/**,
+			**/com/polarbookshop/dispatcherservice/infrastructure/entity/**,
+			**/com/polarbookshop/dispatcherservice/OrderServiceApplication.java
 		</code.coverage.exclusions>
+		<kafka-streams-test-utils.version>2.6.0</kafka-streams-test-utils.version>
+		<testcontainersVersion>1.16.3</testcontainersVersion>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-stream-binder-kafka</artifactId>
 		</dependency>
 
 		<dependency>
@@ -56,9 +68,58 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId>
+			<version>2.8.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>kafka</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.awaitility</groupId>
+			<artifactId>awaitility</artifactId>
+			<version>4.2.0</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-stream</artifactId>
+			<type>test-jar</type>
+			<classifier>test-binder</classifier>
 		</dependency>
 	</dependencies>
 
@@ -68,6 +129,14 @@
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-dependencies</artifactId>
 				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>testcontainers-bom</artifactId>
+				<version>${testcontainersVersion}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -117,6 +186,7 @@
 					<plugin>
 						<groupId>org.springframework.boot</groupId>
 						<artifactId>spring-boot-maven-plugin</artifactId>
+						<version>${spring-boot-maven-plugin.version}</version>
 						<configuration>
 							<layers>
 								<enabled>true</enabled>

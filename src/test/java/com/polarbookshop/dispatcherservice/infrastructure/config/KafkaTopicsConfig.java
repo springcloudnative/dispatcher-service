@@ -10,7 +10,15 @@ public class KafkaTopicsConfig {
 
     @Bean
     public NewTopic topic1() {
-        return TopicBuilder.name("order-accepted")
+        return TopicBuilder
+                .name("order-accepted")
+                .build();
+    }
+
+    @Bean
+    public NewTopic topic2() {
+        return TopicBuilder
+                .name("order-dispatched")
                 .build();
     }
 }

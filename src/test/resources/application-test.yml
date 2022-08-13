@@ -16,12 +16,27 @@ spring:
     function:
       definition: pack|label
     stream:
+      # Kafka common properties (ex.: destination, contentType)
       bindings:
         packlabel-in-0:
           destination: order-accepted
           group: ${spring.application.name}
         packlabel-out-0:
           destination: order-dispatched
+          producer:
+            idempotence: true
+            partitionKeyExpression: 'getPayload().getOrderId()'
+            partitionCount: 3
+      kafka:
+        # Kafka-specific properties (ex.: enableDlq, dlqName)
+        bindings:
+          packlabel-out-0:
+            consumer:
+              enableDlq: true
+              dlqName: dlq-topic
+              autoCommitOnError: true
+              autoCommitOffset: true
+              dlqPartitions: 1
   #
   kafka:
     bootstrap-servers: ${kafka_bootstrap_servers:localhost:9092}
@@ -49,6 +64,8 @@ spring:
       properties:
         spring:
           json:
+            trusted:
+              packages: '*'
             add:
               type:
                 headers: false
@@ -58,7 +75,3 @@ spring:
       poll-timeout: 1800000
       concurrency: 1
       ack-mode: manual_immediate
-
-testcontainers:
-  reuse:
-    enable: true

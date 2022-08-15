@@ -1,13 +1,16 @@
 package com.polarbookshop.dispatcherservice.infrastructure.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.polarbookshop.dispatcherservice.application.dto.OrderAcceptedMessageDTO;
-import com.polarbookshop.dispatcherservice.application.dto.OrderDispatchedMessageDTO;
+import com.polarbookshop.dispatcherservice.domain.events.OrderAcceptedEvent;
+import com.polarbookshop.dispatcherservice.domain.events.OrderDispatchedEvent;
 import com.polarbookshop.dispatcherservice.application.services.KafkaProducer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.TopicListing;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.stream.binder.test.InputDestination;
@@ -44,7 +47,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @DirtiesContext
 @ActiveProfiles("test")
 @Slf4j
-public class FunctionsStreamIntegrationTests {
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+class FunctionsStreamIntegrationTests {
 
     static KafkaContainer kafka;
 
@@ -97,7 +101,8 @@ public class FunctionsStreamIntegrationTests {
     private ObjectMapper objectMapper;
 
     @Test
-    public void testCreationOfTopicAtStartup() throws IOException, ExecutionException, InterruptedException {
+    @Order(1)
+    void testCreationOfTopicAtStartup() throws IOException, ExecutionException, InterruptedException {
 
         AdminClient client = AdminClient.create(admin.getConfigurationProperties());
         Collection<TopicListing> topicList = client.listTopics().listings().get();
@@ -121,21 +126,22 @@ public class FunctionsStreamIntegrationTests {
      * @throws ExecutionException
      */
     @Test
-    public void testPublishOrder() throws IOException, InterruptedException, ExecutionException {
+    @Order(2)
+    void testPublishOrder() throws IOException, InterruptedException, ExecutionException {
 
         long orderId = 121;
 
-        Message<OrderAcceptedMessageDTO> inputMessage = MessageBuilder.
-                withPayload(new OrderAcceptedMessageDTO(orderId)).build();
+        Message<OrderAcceptedEvent> inputMessage = MessageBuilder.
+                withPayload(new OrderAcceptedEvent(orderId)).build();
 
-        Message<OrderDispatchedMessageDTO> expectedOutputMessage = MessageBuilder.
-                withPayload(new OrderDispatchedMessageDTO(orderId)).build();
+        Message<OrderDispatchedEvent> expectedOutputMessage = MessageBuilder.
+                withPayload(new OrderDispatchedEvent(orderId)).build();
 
         // Sends a message to the input channel
         this.input.send(inputMessage);
 
         // Receives and asserts a message from the output channel
-        assertThat(objectMapper.readValue(output.receive().getPayload(), OrderDispatchedMessageDTO.class))
+        assertThat(objectMapper.readValue(output.receive().getPayload(), OrderDispatchedEvent.class))
                 .isEqualTo(expectedOutputMessage.getPayload());
     }
 }

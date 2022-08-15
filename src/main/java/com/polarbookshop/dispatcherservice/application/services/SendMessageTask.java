@@ -1,6 +1,6 @@
 package com.polarbookshop.dispatcherservice.application.services;
 
-import com.polarbookshop.dispatcherservice.application.dto.OrderAcceptedMessageDTO;
+import com.polarbookshop.dispatcherservice.domain.events.OrderAcceptedEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,10 +23,10 @@ public class SendMessageTask {
     // run every 50 sec
     @Scheduled(fixedRateString = "50000")
     public void send() throws ExecutionException, InterruptedException {
-        ListenableFuture<SendResult<Object, OrderAcceptedMessageDTO>> listenableFuture =
-                this.kafkaProducer.sendMessage(new OrderAcceptedMessageDTO(++this.orderId));
+        ListenableFuture<SendResult<Object, OrderAcceptedEvent>> listenableFuture =
+                this.kafkaProducer.sendMessage(new OrderAcceptedEvent(++this.orderId));
 
-        SendResult<Object, OrderAcceptedMessageDTO> result = listenableFuture.get();
+        SendResult<Object, OrderAcceptedEvent> result = listenableFuture.get();
 
         log.info(String.format("Produced:\ntopic: %s\noffset: %d\npartition: %d\nvalue size: %d", result.getRecordMetadata().topic(),
                 result.getRecordMetadata().offset(),

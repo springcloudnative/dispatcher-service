@@ -1,7 +1,7 @@
 package com.polarbookshop.dispatcherservice.infrastructure.config;
 
-import com.polarbookshop.dispatcherservice.application.dto.OrderAcceptedMessageDTO;
-import com.polarbookshop.dispatcherservice.application.dto.OrderDispatchedMessageDTO;
+import com.polarbookshop.dispatcherservice.domain.events.OrderAcceptedEvent;
+import com.polarbookshop.dispatcherservice.domain.events.OrderDispatchedEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +25,7 @@ public class DispatchingFunctions {
     private String topic;
 
     @Bean
-    public Function<OrderAcceptedMessageDTO, Message<Long>> pack() {
+    public Function<OrderAcceptedEvent, Message<Long>> pack() {
         return orderAcceptedMessage -> {
             log.info("The order with id {} is packed.", orderAcceptedMessage.getOrderId());
             Message<Long>  message =
@@ -37,10 +37,10 @@ public class DispatchingFunctions {
     }
 
     @Bean
-    public Function<Flux<Message<Long>>, Flux<Message<OrderDispatchedMessageDTO>>> label() {
+    public Function<Flux<Message<Long>>, Flux<Message<OrderDispatchedEvent>>> label() {
         return orderFlux -> orderFlux.map(orderMessage -> {
             log.info("The order with id {} is labeled.", orderMessage.getPayload().longValue());
-            return MessageBuilder.withPayload(new OrderDispatchedMessageDTO(orderMessage.getPayload()))
+            return MessageBuilder.withPayload(new OrderDispatchedEvent(orderMessage.getPayload()))
                     .setHeader(KafkaHeaders.MESSAGE_KEY, orderMessage.getPayload().longValue())
                     .build();
         });

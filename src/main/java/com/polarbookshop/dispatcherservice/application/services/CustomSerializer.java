@@ -1,14 +1,14 @@
 package com.polarbookshop.dispatcherservice.application.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.polarbookshop.dispatcherservice.application.dto.OrderAcceptedMessageDTO;
+import com.polarbookshop.dispatcherservice.domain.events.OrderAcceptedEvent;
 import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.serialization.Serializer;
 
 import java.util.Map;
 
-public class CustomSerializer implements Serializer<OrderAcceptedMessageDTO> {
+public class CustomSerializer implements Serializer<OrderAcceptedEvent> {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -18,7 +18,7 @@ public class CustomSerializer implements Serializer<OrderAcceptedMessageDTO> {
     }
 
     @Override
-    public byte[] serialize(String topic, OrderAcceptedMessageDTO data) {
+    public byte[] serialize(String topic, OrderAcceptedEvent data) {
         try {
             if (data == null){
                 System.out.println("Null received at serializing");
@@ -32,7 +32,7 @@ public class CustomSerializer implements Serializer<OrderAcceptedMessageDTO> {
     }
 
     @Override
-    public byte[] serialize(String topic, Headers headers, OrderAcceptedMessageDTO data) {
+    public byte[] serialize(String topic, Headers headers, OrderAcceptedEvent data) {
         return Serializer.super.serialize(topic, headers, data);
     }
 

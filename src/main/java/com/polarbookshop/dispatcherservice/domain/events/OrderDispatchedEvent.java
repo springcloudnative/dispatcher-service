@@ -1,4 +1,4 @@
-package com.polarbookshop.dispatcherservice.application.dto;
+package com.polarbookshop.dispatcherservice.domain.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderDispatchedMessageDTO {
+public class OrderDispatchedEvent {
 
     Long orderId;
 }

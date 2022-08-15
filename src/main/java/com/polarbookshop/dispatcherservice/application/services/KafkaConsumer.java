@@ -1,6 +1,6 @@
 package com.polarbookshop.dispatcherservice.application.services;
 
-import com.polarbookshop.dispatcherservice.application.dto.OrderAcceptedMessageDTO;
+import com.polarbookshop.dispatcherservice.domain.events.OrderAcceptedEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -18,10 +18,10 @@ import java.util.concurrent.CountDownLatch;
 public class KafkaConsumer {
 
     private CountDownLatch latch = new CountDownLatch(1);
-    private OrderAcceptedMessageDTO payload;
+    private OrderAcceptedEvent payload;
 
     @KafkaListener(topics = "#{'${spring.cloud.stream.bindings.packlabel-in-0.destination}'.split(',')}")
-    public void consume(@Payload OrderAcceptedMessageDTO data,
+    public void consume(@Payload OrderAcceptedEvent data,
                         @Headers MessageHeaders messageHeaders,
                         final Acknowledgment acknowledgment
     ) {
@@ -51,7 +51,7 @@ public class KafkaConsumer {
         latch = new CountDownLatch(1);
     }
 
-    public OrderAcceptedMessageDTO getPayload() {
+    public OrderAcceptedEvent getPayload() {
         return payload;
     }
 }

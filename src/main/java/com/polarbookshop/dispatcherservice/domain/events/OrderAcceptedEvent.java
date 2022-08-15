@@ -1,4 +1,4 @@
-package com.polarbookshop.dispatcherservice.application.dto;
+package com.polarbookshop.dispatcherservice.domain.events;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderAcceptedMessageDTO {
+public class OrderAcceptedEvent {
 
     Long orderId;
 }
